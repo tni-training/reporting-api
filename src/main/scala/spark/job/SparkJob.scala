@@ -86,7 +86,7 @@ object SparkJobApp{
             jobJson =>
               complete{
                 val job = parse(jobJson).extract[SparkJob]
-                if(job.is.isEmpty){
+                if(job.id.isEmpty){
                   "Opps! it seems you haven't mention the job id."
                 }
                 else{
