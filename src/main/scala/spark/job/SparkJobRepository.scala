@@ -2,9 +2,13 @@ package spark.job
 
 import slick.lifted.ProvenShape
 import spark.job
-import scala.concurrent.Future
+
+import scala.concurrent.{Await, Future}
 import java.util.Date
 import DateMapper._
+
+import scala.concurrent.duration.Duration
+import scala.util.Try
 
 
 object SparkJobRepository {
@@ -15,8 +19,16 @@ object SparkJobRepository {
 
   private def sparkJobTableAutoInc = sparkJobTableQuery
 
-  def create(sparkJob: SparkJob) = db.run{
-    sparkJobTableAutoInc += sparkJob
+//    def create(sparkJob: SparkJob) = db.run{
+//      sparkJobTableAutoInc += sparkJob
+//    }
+
+
+  def create(sparkJob: SparkJob): Future[SparkJob] = db.run {
+    val sparkJobWithId =   (sparkJobTableQuery returning sparkJobTableQuery.map(_.id)
+                            into ((sparkJob, newId) => sparkJob.copy(id= Some(newId)))
+                            ) += sparkJob
+    sparkJobWithId
   }
 
   def getAll(): Future[List[SparkJob]] = db.run{
