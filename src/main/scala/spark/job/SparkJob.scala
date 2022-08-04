@@ -1,42 +1,3 @@
-//package spark.job
-//
-//import org.slf4j.LoggerFactory
-//import scala.concurrent.duration.DurationInt
-//import scala.concurrent.{Await, Future}
-//
-//object SparkJobApp extends App {
-//
-//  val logger = LoggerFactory.getLogger(this.getClass)
-//
-//  //FOR CREATING
-//
-////  val sparkJob20: SparkJob = SparkJob("Job20", "120", "Twenty", "Word", "2.12", 2, "process", 2)
-////  val res = SparkJobRepository.create(sparkJob20).waitTillCompletion
-////  logger.info("Created -> "+res)
-//
-////  FOR ACCESSING ALL JOBS
-//  val allJobs = SparkJobRepository.getAll().waitTillCompletion
-//  logger.info("\nAll Jobs are: "+ allJobs)
-//
-//  // FOR ACCESSING JOB BY ID
-////  val job= SparkJobRepository.getById(19).waitTillCompletion
-////  logger.info(s"\nJob with id 19 : " + job.get)
-//
-//  // FOR DELETING
-////  val  res = SparkJobRepository.deleteJob(14).waitTillCompletion
-////  logger.info("\nInformation Deleted--- "+ res + "\n")
-//
-//  //FOR UPDATING
-////  val sparkJob15: SparkJob = SparkJob("Job15", "115", "Fifteeen", "Word", "2.12", 2, "process", 2, id=Some(15))
-////  val upRes = SparkJobRepository.update(sparkJob15).waitTillCompletion
-////  logger.info("Updated-> "+upRes)
-//
-//  implicit class Waiting[T](val f: Future[T])  {
-//    def waitTillCompletion: T= {
-//      Await.result(f, 15.seconds)
-//    }
-//  }
-//}
 
 package spark.job
 
@@ -125,6 +86,10 @@ object SparkJobApp{
             jobJson =>
               complete{
                 val job = parse(jobJson).extract[SparkJob]
+                if(job.is.isEmpty){
+                  "Opps! it seems you haven't mention the job id."
+                }
+                else{
                 val isJob = SparkJobRepository.getById(job.id.get).waitTillCompletion
                 if(isJob == None){
                   s"Job with id ${job.id.get} is not present."
@@ -133,6 +98,7 @@ object SparkJobApp{
                   s"Updated ${write(isJob)}"
                 }
                 }
+              }
           }
         }
       }
