@@ -6,7 +6,7 @@ import akka.stream.ActorMaterializer
 
 import scala.concurrent.ExecutionContext
 
-object Server extends App with SparkJobApi {
+object Server extends App with SparkJobApi with CorsSupport{
 
   implicit val system: ActorSystem = ActorSystem("RestServiceApp")
 
@@ -17,7 +17,7 @@ object Server extends App with SparkJobApi {
 
   val port = 8081
 
-  Http().newServerAt("localhost", port).bind(routes)
+  Http().newServerAt("localhost", port).bind(corsHandler(routes))
   println(s"Server is running on port $port")
 
 }
