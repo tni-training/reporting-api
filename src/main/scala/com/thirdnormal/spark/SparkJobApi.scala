@@ -55,6 +55,31 @@ trait SparkJobApi {
           }
         }
       }
+    },
+
+    // Updating Job
+    put{
+      path("updatejob"){
+        entity(as[String]){
+          jobJson =>{
+            val job = parse(jobJson).extract[SparkJob]
+            if(job.id.isEmpty){
+              complete("Opps! it seems you haven't pass the job id.")
+            }else{
+              onSuccess(SparkJobRepository.update(job)){ isUpdated =>
+                val response = if(isUpdated == 1) {
+                  "Updated"
+                }else {
+                  s"Job with id ${job.id.get} is not present"
+                }
+                complete(response)
+              }
+            }
+
+          }
+
+        }
+      }
     }
   )
 
