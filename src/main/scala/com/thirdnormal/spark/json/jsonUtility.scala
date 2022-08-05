@@ -1,4 +1,4 @@
-package spark.job.json
+package com.thirdnormal.spark.json
 
 import org.json4s._
 import org.json4s.native.{JsonMethods, Serialization}

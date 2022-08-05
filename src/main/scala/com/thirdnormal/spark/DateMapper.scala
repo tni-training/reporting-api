@@ -1,6 +1,6 @@
-package spark.job
+package com.thirdnormal.spark
 
-  object DateMapper {
+object DateMapper {
     import slick.jdbc.MySQLProfile.api._
 
     implicit val utilDate2SqlTimestampMapper = MappedColumnType.base[java.util.Date, java.sql.Timestamp](
