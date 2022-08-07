@@ -12,6 +12,7 @@ trait SparkJobApi {
 
   val routes: Route = concat(
     post {
+      //  ADDING JOB
       path("addjob") {
         entity(as[String]) { newJobJson => {
           val newJob = parse(newJobJson).extract[SparkJob]
@@ -22,7 +23,8 @@ trait SparkJobApi {
         }
       }
     },
-    //GETTING ALL JOBS
+
+    //  GETTING ALL JOBS
     get {
       path("alljobs") {
         onSuccess(SparkJobRepository.getAll()) { response =>
@@ -30,6 +32,8 @@ trait SparkJobApi {
         }
       }
     },
+
+    //  GETTING JOB BY ID
     get {
       path("job") {
         parameters('id.as[Int]) { id =>
@@ -41,7 +45,7 @@ trait SparkJobApi {
       }
     },
 
-    // DELETING JOB
+    //  DELETING JOB
     delete {
       path("removejob") {
         parameters('id.as[Int]) { id =>
@@ -57,7 +61,7 @@ trait SparkJobApi {
       }
     },
 
-    // Updating Job
+    //  Updating Job
     put{
       path("updatejob"){
         entity(as[String]){
@@ -75,9 +79,7 @@ trait SparkJobApi {
                 complete(response)
               }
             }
-
           }
-
         }
       }
     }
