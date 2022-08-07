@@ -3,7 +3,7 @@ package com.thirdnormal.spark.json
 import org.json4s._
 import org.json4s.native.{JsonMethods, Serialization}
 
-object JsonUtility {
+trait JsonUtility {
 
   implicit val formats = DefaultFormats
 

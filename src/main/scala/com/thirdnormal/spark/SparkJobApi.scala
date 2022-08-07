@@ -1,12 +1,14 @@
 package com.thirdnormal.spark
 
+
+
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.thirdnormal.spark.json.JsonUtility._
-
+import com.thirdnormal.spark.json.JsonUtility
+import com.thirdnormal.spark.SparkJobRepository
 import scala.concurrent.ExecutionContext
 
-trait SparkJobApi {
+trait SparkJobApi extends SparkJobRepository with JsonUtility{
 
   implicit val ec: ExecutionContext
 
@@ -16,7 +18,7 @@ trait SparkJobApi {
       path("addjob") {
         entity(as[String]) { newJobJson => {
           val newJob = parse(newJobJson).extract[SparkJob]
-          onSuccess(SparkJobRepository.create(newJob)) { jobWithId =>
+          onSuccess(create(newJob)) { jobWithId =>
             complete(write(jobWithId))
           }
         }
@@ -27,7 +29,7 @@ trait SparkJobApi {
     //  GETTING ALL JOBS
     get {
       path("alljobs") {
-        onSuccess(SparkJobRepository.getAll()) { response =>
+        onSuccess(getAll()) { response =>
           complete(write(response))
         }
       }
@@ -37,7 +39,7 @@ trait SparkJobApi {
     get {
       path("job") {
         parameters('id.as[Int]) { id =>
-          onSuccess(SparkJobRepository.getById(id)) {
+          onSuccess(getById(id)) {
             case Some(job) => complete(write(job))
             case None => complete(s"Job with id $id is not present.")
           }
@@ -49,7 +51,7 @@ trait SparkJobApi {
     delete {
       path("removejob") {
         parameters('id.as[Int]) { id =>
-          onSuccess(SparkJobRepository.deleteJob(id)) { isDeleted =>
+          onSuccess(deleteJob(id)) { isDeleted =>
             val response = if (isDeleted == 1) {
               "Job is deleted"
             } else {
@@ -70,7 +72,7 @@ trait SparkJobApi {
             if(job.id.isEmpty){
               complete("Opps! it seems you haven't pass the job id.")
             }else{
-              onSuccess(SparkJobRepository.update(job)){ isUpdated =>
+              onSuccess(update(job)){ isUpdated =>
                 val response = if(isUpdated == 1) {
                   "Updated"
                 }else {

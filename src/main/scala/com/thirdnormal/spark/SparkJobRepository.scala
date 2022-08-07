@@ -8,7 +8,8 @@ import java.util.Date
 import scala.concurrent.Future
 
 
-object SparkJobRepository {
+//object SparkJobRepository {
+  trait SparkJobRepository {
 
   import slick.jdbc.MySQLProfile.api._
 
