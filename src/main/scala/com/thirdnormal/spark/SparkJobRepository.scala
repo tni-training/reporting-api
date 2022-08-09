@@ -41,9 +41,9 @@ import scala.concurrent.Future
     sparkJobTableQuery.filter(_.id === sparkJob.id.get).map(elem => (elem.action, elem.submissionId, elem.message, elem.jarParams, elem.serverSparkVersion, elem.isAccepted, elem.status, elem.isCompleted, elem.modifiedAt)).update(sparkJob.action, sparkJob.submissionId, sparkJob.message, sparkJob.jarParams, sparkJob.serverSparkVersion, sparkJob.isAccepted, sparkJob.status, sparkJob.isCompleted, sparkJob.modifiedAt)
   }
 
-  def deleteJob(id: Int): Future[Int] = db.run {
-    sparkJobTableQuery.filter(_.id === id).delete
-  }
+//  def deleteJob(id: Int): Future[Int] = db.run {
+//    sparkJobTableQuery.filter(_.id === id).delete
+//  }
 
   def deleteMultipleJob(ids: List[Int]): Future[Int]  = db.run{
   sparkJobTableQuery.filter(_.id.inSet(ids)).delete
