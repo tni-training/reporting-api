@@ -8,7 +8,8 @@ import java.util.Date
 import scala.concurrent.Future
 
 
-object SparkJobRepository {
+//object SparkJobRepository {
+  trait SparkJobRepository {
 
   import slick.jdbc.MySQLProfile.api._
 
@@ -42,6 +43,10 @@ object SparkJobRepository {
 
   def deleteJob(id: Int): Future[Int] = db.run {
     sparkJobTableQuery.filter(_.id === id).delete
+  }
+
+  def deleteMultipleJob(ids: List[Int]): Future[Int]  = db.run{
+  sparkJobTableQuery.filter(_.id.inSet(ids)).delete
   }
 
   private def sparkJobTableAutoInc = sparkJobTableQuery
