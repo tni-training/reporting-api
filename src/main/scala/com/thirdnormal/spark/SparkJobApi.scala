@@ -40,44 +40,45 @@ trait SparkJobApi extends SparkJobRepository with JsonUtility{
           onSuccess(getById(id)) {
             case Some(job) => complete(write(job))
             case None => complete(s"Job with id $id is not present.")
-//            case None => complete(HttpResponse(StatusCodes.NotFound, entity= s"Job with id $id is not present."))
           }
         }
       }
     },
+//
+//    //  DELETING JOB
+//    delete {
+//      path("removejob") {
+//        parameters('id.as[Int]) { id =>
+//          onSuccess(deleteJob(id)) { isDeleted =>
+//            val response = if (isDeleted == 1) {
+//              "Job is deleted"
+//            } else {
+//              s"Job with id $id is not present."
+//            }
+//            complete(response)
+//          }
+//        }
+//      }
+//    },
 
-    //  DELETING JOB
-    delete {
-      path("removejob") {
-        parameters('id.as[Int]) { id =>
-          onSuccess(deleteJob(id)) { isDeleted =>
-            val response = if (isDeleted == 1) {
-              "Job is deleted"
+
+    //DELETING SINGLE OR MULTIPLE JOB WITH ID
+
+
+    delete{
+      path("removejob"){
+        parameters('ids.as[String]){ ids =>
+          val removeJobId = ids.split(',').map(_.toInt).toList
+          onSuccess(deleteMultipleJob(removeJobId)){isDeleted =>
+            val response = if (isDeleted == 0) {
+              "Any of the Job ids are not present."
             } else {
-              s"Job with id $id is not present."
+              "Job ids which are present is Deleted"
             }
             complete(response)
-          }
         }
       }
-    },
-    //DELETING MULTIPLE JOB
-    put{
-      path("removejobs"){
-        entity(as[String]){
-          jobjson => {
-            val job = parse(jobjson).extract[RemoveJobId].job_id
-            onSuccess(deleteMultipleJob(job)){isDeleted =>
-              val response = if (isDeleted == 0) {
-                s"All Job ids are not present."
-              } else {
-                "All the jobs id which is present is Deleted"
-              }
-              complete(response)
-            }
-          }
-        }
-      }
+    }
     },
 
     //  Updating Job
@@ -105,6 +106,4 @@ trait SparkJobApi extends SparkJobRepository with JsonUtility{
     }
   )
 
-
 }
-case class RemoveJobId(job_id: List[Int])
