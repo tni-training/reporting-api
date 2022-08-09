@@ -30,9 +30,18 @@ $ curl -XPUT 'http://localhost:8081/updatejob' -d '{"action":"Job41", "submissio
 ```
 If don't pass the job id it will tell you to do so, if u pass the wrong job id it will tell job id is not present
 
-5) Delete Job with id
+5) Delete Job with ids
+
+##### For Deleting a Single Job
 
 request:
 ```
-$ curl -XDELETE http://localhost:8081/removejob\?id\=42
+$ curl -XDELETE http://localhost:8081/removejob\?ids\=42
+```
+
+##### For Deleting Multiple Job
+
+```
+$ curl -XDELETE http://localhost:8081/removejob\?ids\=58,61,47
+
 ```
