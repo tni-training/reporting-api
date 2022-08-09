@@ -45,6 +45,10 @@ import scala.concurrent.Future
     sparkJobTableQuery.filter(_.id === id).delete
   }
 
+  def deleteMultipleJob(ids: List[Int]): Future[Int]  = db.run{
+  sparkJobTableQuery.filter(_.id.inSet(ids)).delete
+  }
+
   private def sparkJobTableAutoInc = sparkJobTableQuery
 
   class SparkJobTable(tag: Tag) extends Table[SparkJob](tag, "spark_job") {

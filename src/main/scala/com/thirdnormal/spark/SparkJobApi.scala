@@ -1,11 +1,9 @@
 package com.thirdnormal.spark
 
-
-
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.thirdnormal.spark.json.JsonUtility
-import com.thirdnormal.spark.SparkJobRepository
+
 import scala.concurrent.ExecutionContext
 
 trait SparkJobApi extends SparkJobRepository with JsonUtility{
@@ -42,6 +40,7 @@ trait SparkJobApi extends SparkJobRepository with JsonUtility{
           onSuccess(getById(id)) {
             case Some(job) => complete(write(job))
             case None => complete(s"Job with id $id is not present.")
+//            case None => complete(HttpResponse(StatusCodes.NotFound, entity= s"Job with id $id is not present."))
           }
         }
       }
@@ -62,12 +61,31 @@ trait SparkJobApi extends SparkJobRepository with JsonUtility{
         }
       }
     },
+    //DELETING MULTIPLE JOB
+    put{
+      path("removejobs"){
+        entity(as[String]){
+          jobjson => {
+            val job = parse(jobjson).extract[RemoveJobId].job_id
+            onSuccess(deleteMultipleJob(job)){isDeleted =>
+              val response = if (isDeleted == 0) {
+                s"All Job ids are not present."
+              } else {
+                "All the jobs id which is present is Deleted"
+              }
+              complete(response)
+            }
+          }
+        }
+      }
+    },
 
     //  Updating Job
     put{
       path("updatejob"){
         entity(as[String]){
           jobJson =>{
+
             val job = parse(jobJson).extract[SparkJob]
             if(job.id.isEmpty){
               complete("Opps! it seems you haven't pass the job id.")
@@ -85,10 +103,8 @@ trait SparkJobApi extends SparkJobRepository with JsonUtility{
         }
       }
     }
-
   )
 
 
 }
-
-
+case class RemoveJobId(job_id: List[Int])
