@@ -1,22 +1,17 @@
 package com.thirdnormal.spark.api
 
-import akka.actor.Status.Success
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.thirdnormal.spark.Server.routes
-import com.thirdnormal.spark.api.SparkJobApi
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import com.thirdnormal.spark.json.JsonUtility
 import com.thirdnormal.spark.repository.{SparkJob, SparkJobRepository}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.MockitoSugar
-
-import java.util.Date
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class ApiTest extends AnyWordSpec with Matchers with ScalatestRouteTest with MockitoSugar with JsonUtility {
+class SparkJobApiTest extends AnyWordSpec with Matchers with ScalatestRouteTest with MockitoSugar with JsonUtility {
   val mockedSparkJobRepository = mock[SparkJobRepository]
 
   object TestObject extends SparkJobApi{
