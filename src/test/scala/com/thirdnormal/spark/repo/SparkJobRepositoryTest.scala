@@ -42,7 +42,7 @@ class SparkJobRepositoryTest extends AnyFunSuite with SparkJobRepository with Sc
 
   test("Delete Job By Id"){
     // IF JOB ID IS NOT PRESENT
-    val isJobAvail = deleteJob(555)
+    val isJobAvail = deleteMultipleJob(List(555))
     whenReady(isJobAvail){resp =>
       assert(resp === 0)
     }
