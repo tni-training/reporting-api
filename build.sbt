@@ -21,7 +21,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
   "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,
   "org.json4s" %% "json4s-native" % "3.6.11",
-  "com.typesafe.akka" %% "akka-http-spray-json" % AkkaHttpVersion
+  "com.typesafe.akka" %% "akka-http-spray-json" % AkkaHttpVersion,
+  "org.mockito" %% "mockito-scala" % "1.11.2",
+  "com.h2database" % "h2" % "1.4.200",
 
 )
 

@@ -1,14 +1,16 @@
-package com.thirdnormal.spark
+package com.thirdnormal.spark.api
 
-import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.Directives.{_symbol2NR, as, complete, concat, delete, entity, get, onSuccess, parameters, path, post, put}
 import akka.http.scaladsl.server.Route
 import com.thirdnormal.spark.json.JsonUtility
+import com.thirdnormal.spark.repository.{SparkJob, SparkJobRepository}
 
 import scala.concurrent.ExecutionContext
 
-trait SparkJobApi extends SparkJobRepository with JsonUtility{
+trait SparkJobApi extends JsonUtility {
 
   implicit val ec: ExecutionContext
+  val sparkJobRepository: SparkJobRepository
 
   val routes: Route = concat(
     post {
@@ -16,7 +18,7 @@ trait SparkJobApi extends SparkJobRepository with JsonUtility{
       path("addjob") {
         entity(as[String]) { newJobJson => {
           val newJob = parse(newJobJson).extract[SparkJob]
-          onSuccess(create(newJob)) { jobWithId =>
+          onSuccess(sparkJobRepository.create(newJob)) { jobWithId =>
             complete(write(jobWithId))
           }
         }
@@ -27,7 +29,7 @@ trait SparkJobApi extends SparkJobRepository with JsonUtility{
     //  GETTING ALL JOBS
     get {
       path("alljobs") {
-        onSuccess(getAll()) { response =>
+        onSuccess(sparkJobRepository.getAll()) { response =>
           complete(write(response))
         }
       }
@@ -37,64 +39,46 @@ trait SparkJobApi extends SparkJobRepository with JsonUtility{
     get {
       path("job") {
         parameters('id.as[Int]) { id =>
-          onSuccess(getById(id)) {
+          onSuccess(sparkJobRepository.getById(id)) {
             case Some(job) => complete(write(job))
             case None => complete(s"Job with id $id is not present.")
           }
         }
       }
     },
-//
-//    //  DELETING JOB
-//    delete {
-//      path("removejob") {
-//        parameters('id.as[Int]) { id =>
-//          onSuccess(deleteJob(id)) { isDeleted =>
-//            val response = if (isDeleted == 1) {
-//              "Job is deleted"
-//            } else {
-//              s"Job with id $id is not present."
-//            }
-//            complete(response)
-//          }
-//        }
-//      }
-//    },
-
 
     //DELETING SINGLE OR MULTIPLE JOB WITH ID
 
-
-    delete{
-      path("removejob"){
-        parameters('ids.as[String]){ ids =>
+    delete {
+      path("removejob") {
+        parameters('ids.as[String]) { ids =>
           val removeJobId = ids.split(',').map(_.toInt).toList
-          onSuccess(deleteMultipleJob(removeJobId)){isDeleted =>
+          onSuccess(sparkJobRepository.deleteMultipleJob(removeJobId)) { isDeleted =>
             val response = if (isDeleted == 0) {
               "Any of the Job ids are not present."
             } else {
               "Job ids which are present is Deleted"
             }
             complete(response)
+          }
         }
       }
-    }
     },
 
     //  Updating Job
-    put{
-      path("updatejob"){
-        entity(as[String]){
-          jobJson =>{
+    put {
+      path("updatejob") {
+        entity(as[String]) {
+          jobJson => {
 
             val job = parse(jobJson).extract[SparkJob]
-            if(job.id.isEmpty){
+            if (job.id.isEmpty) {
               complete("Opps! it seems you haven't pass the job id.")
-            }else{
-              onSuccess(update(job)){ isUpdated =>
-                val response = if(isUpdated == 1) {
+            } else {
+              onSuccess(sparkJobRepository.update(job)) { isUpdated =>
+                val response = if (isUpdated == 1) {
                   "Updated"
-                }else {
+                } else {
                   s"Job with id ${job.id.get} is not present"
                 }
                 complete(response)
