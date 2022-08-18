@@ -1,13 +1,14 @@
-package com.thirdnormal.spark.service
+package com.thirdnormal.spark.api
 
 import akka.actor.Status.Success
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.thirdnormal.spark.Server.routes
+import com.thirdnormal.spark.api.SparkJobApi
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import com.thirdnormal.spark.json.JsonUtility
-import com.thirdnormal.spark.{SparkJob, SparkJobApi, SparkJobRepository}
+import com.thirdnormal.spark.repository.{SparkJob, SparkJobRepository}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.MockitoSugar
 
@@ -31,6 +32,7 @@ class ApiTest extends AnyWordSpec with Matchers with ScalatestRouteTest with Moc
       }
     }
 
+    // Get User
     "Get user" in {
       when(mockedSparkJobRepository.getById(any[Int])) thenReturn Future(None)
       Get("/job?id=2") ~> Route.seal(TestObject.routes) ~> check {
@@ -61,7 +63,7 @@ class ApiTest extends AnyWordSpec with Matchers with ScalatestRouteTest with Moc
       }
     }
 
-
+    //  Update User
         "Update user " in {
           //IF WE DON'T PASS THE JOB ID
           val job1 = SparkJob("Job56", "156", "Nineteen", "Word", "2.12", 2, "process", 2)
